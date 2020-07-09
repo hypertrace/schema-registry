@@ -1,0 +1,83 @@
+{{- if .Values.backup.enabled }}
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ include "schema-registry.fullname" . }}-backup
+  labels:
+    {{- include "schema-registry.labels.standard" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.backup.schedule |  quote }}
+  {{- if .Values.backup.startingDeadlineSeconds }}
+  startingDeadlineSeconds: {{ int .Values.backup.startingDeadlineSeconds }}
+  {{- end }}
+  {{- if .Values.backup.concurrencyPolicy }}
+  concurrencyPolicy: {{ .Values.backup.concurrencyPolicy }}
+  {{- end }}
+  {{- if not .Values.backup.enabled }}
+  suspend: true
+  {{- end }}
+  jobTemplate:
+    spec:
+      template:
+        {{- if .Values.backup.podAnnotations }}
+        metadata:
+          annotations:
+            {{- toYaml .Values.backup.podAnnotations | nindent 12 }}
+        {{- end }}
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: {{ include "schema-registry.fullname" . }}-backup
+              image: {{ .Values.backup.image.repository }}:{{ .Values.backup.image.tag }}
+              imagePullPolicy: {{ .Values.backup.image.pullPolicy }}
+              command:
+                - "/bin/bash"
+                - "-cx"
+                - |
+                  timestamp=$(date +%Y-%m-%d-%H-%M-%S)
+                  month=${timestamp:0:7}
+                  BACKUP_LOCATION=gs://$BUCKET/schema-registry/$CLUSTER_NAME/$month
+                  unset JMX_PORT KAFKA_OPTS KAFKA_HEAP_OPTS KAFKA_LOG4J_OPTS
+                  /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server $KAFKA_BOOTSTRAP_SERVERS --topic $KAFKA_TOPIC --from-beginning --property print.key=true --timeout-ms 60000 1> schemas-${timestamp}.log || exit 2
+                  tar cvfz schemas-${timestamp}.tar.gz schemas-$timestamp.log || exit 2
+                  gcloud auth activate-service-account --key-file $GOOGLE_APPLICATION_CREDENTIALS || exit 2
+                  gsutil cp schemas-${timestamp}.tar.gz $BACKUP_LOCATION/schemas-${timestamp}.tar.gz || exit 2
+              env:
+                - name: CLUSTER_NAME
+                  value: {{ .Values.backup.cluster }}
+                - name: BUCKET
+                  value: {{ .Values.backup.gcloud.bucket }}
+                - name: KAFKA_BOOTSTRAP_SERVERS
+                  value: {{ template "schema-registry.kafka.bootstrapServers" . }}
+                - name: KAFKA_TOPIC
+                  value: {{ .Values.backup.topic }}
+                - name: GOOGLE_APPLICATION_CREDENTIALS
+                  value: "/accounts/key.json"
+              volumeMounts:
+                - name: gcs-iam-secret
+                  mountPath: "/accounts"
+          volumes:
+            - name: gcs-iam-secret
+              secret:
+                secretName: {{ .Values.backup.gcloud.secretName }}
+          {{- if .Values.backup.imagePullSecrets }}
+          imagePullSecrets:
+            {{- toYaml .Values.imagePullSecrets | nindent 12 }}
+          {{- end }}
+          {{- with .Values.backup.affinity }}
+          affinity:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.backup.nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.backup.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.backup.tolerations }}
+          tolerations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+{{- end }}

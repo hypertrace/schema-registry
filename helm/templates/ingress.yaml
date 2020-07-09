@@ -1,0 +1,34 @@
+{{- if .Values.ingress.enabled }}
+{{- $serviceName := include "schema-registry.fullname" . -}}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ include "schema-registry.fullname" . }}
+  annotations:
+    {{- toYaml .Values.ingress.annotations | nindent 4 }}
+  labels:
+    {{- include "schema-registry.labels.standard" . | nindent 4 }}
+spec:
+  rules:
+  {{- range .Values.ingress.hosts }}
+    - http:
+        paths:
+          {{- range .paths }}
+          - path: {{ .path | default "/" | quote }}
+            backend:
+              serviceName: {{ default $serviceName .serviceName | quote }}
+              servicePort: {{ default "8081" .port }}
+          {{- end }}
+      {{- if .name }}
+      host: {{ .name | quote }}
+      {{- end }}
+  {{- end }}
+  {{- range .Values.ingress.hosts }}
+  {{- if and .name .tls }}
+  tls:
+    - hosts:
+        - {{ .name }}
+      secretName: {{ .tlsSecret }}
+  {{- end }}
+  {{- end }}
+{{- end -}}
