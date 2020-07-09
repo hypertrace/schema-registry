@@ -48,7 +48,7 @@ jobs:
           args: :tag -Prelease
       - add_ssh_keys:
           fingerprints:
-            - "aa:6d:79:68:46:75:61:bd:87:25:fd:9a:b3:de:5d:1c"
+            - "95:da:b2:1c:45:1b:b1:a9:c6:20:be:b2:e5:95:6e:a6"
       - run: git push origin $(./gradlew -q :printVersion)
   validate-charts:
     executor: helm
