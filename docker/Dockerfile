@@ -14,6 +14,8 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /tmp/* /var/lib/apt/lists/*
 
+COPY LICENSE /usr/share/doc/schema-registry/licenses/LICENSE
+
 EXPOSE 8081
 
 CMD ["/usr/bin/docker-start.sh"]
