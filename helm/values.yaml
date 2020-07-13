@@ -7,8 +7,7 @@ replicaCount: 1
 
 # Docker container to deploy
 image:
-  repository: "confluentinc/cp-schema-registry"
-  tag: "5.3.2"
+  repository: "hypertrace/schema-registry"
   pullPolicy: "IfNotPresent"
 
 imagePullSecrets: []
