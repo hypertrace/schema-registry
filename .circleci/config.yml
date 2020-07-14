@@ -23,7 +23,6 @@ commands:
           name: << parameters.args >>
           command: ./gradlew << parameters.args >> --info --max-workers=2 -Dorg.gradle.jvmargs=-Xmx2g -Dorg.gradle.console=plain
           when: << parameters.when >>
-
   setup_build_environment:
     description: 'Checkout, restore the cache, and setup docker'
     steps:
@@ -31,6 +30,7 @@ commands:
       - restore_cache:
           keys: # Use gradle version for cache, so it doesn't download every time
             - v1-dependencies-{{ checksum "./gradle/wrapper/gradle-wrapper.properties" }}
+      - setup_remote_docker
   save_populated_cache:
     description: "Save the gradle binary to the cache so it doesn't have to redownload"
     steps:
@@ -40,7 +40,14 @@ commands:
           key: v1-dependencies-{{ checksum "./gradle/wrapper/gradle-wrapper.properties" }}
 
 jobs:
-  tag:
+  build:
+    executor: gradle_docker
+    steps:
+      - setup_build_environment
+      - gradle:
+          args: dockerBuildImages
+      - save_populated_cache
+  publish:
     executor: gradle_docker
     steps:
       - setup_build_environment
@@ -50,6 +57,8 @@ jobs:
           fingerprints:
             - "95:da:b2:1c:45:1b:b1:a9:c6:20:be:b2:e5:95:6e:a6"
       - run: git push origin $(./gradlew -q :printVersion)
+      - gradle:
+          args: dockerPushImages
   validate-charts:
     executor: helm
     steps:
@@ -79,10 +88,12 @@ workflows:
   version: 2
   build-and-publish:
     jobs:
+      - build
       - validate-charts
-      - tag:
+      - publish:
           context: hypertrace-publishing
           requires:
+            - build
             - validate-charts
           filters:
             branches:
@@ -91,7 +102,7 @@ workflows:
       - package-charts:
           context: hypertrace-publishing
           requires:
-            - tag
+            - publish
           filters:
             branches:
               only:
