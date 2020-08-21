@@ -1,21 +1,39 @@
-FROM adoptopenjdk/openjdk11:jre-11.0.4_11@sha256:140ba182d696180600a2871a98f67ad0ee2d6a1e48a7c570d1c0e156860c2a9d
+# Using the same image as we use in CircleCI to avoid transfer costs
+FROM cimg/openjdk:11.0 AS schema-registry
 
-ENV SCHEMA_REGISTRY_VERSION=5.3.2-1
+# Use latest stable release here
+ENV CONFLUENT_VERSION 5.5.1
+ENV SCALA_VERSION 2.12
 
-ADD docker-start.sh /usr/bin/docker-start.sh
+USER root
+WORKDIR /opt/schema-registry
+COPY install /opt/schema-registry/
+COPY docker-start /opt/schema-registry/
+RUN ./install && rm install
 
-RUN apt-get update && \
-    apt-get install -y gnupg && \
-    echo "deb [arch=amd64] https://packages.confluent.io/deb/5.3 stable main" | tee -a /etc/apt/sources.list.d/confluent.list && \
-    curl https://packages.confluent.io/deb/5.3/archive.key | apt-key add - && \
-    apt-get update && \
-    apt-get install -y confluent-schema-registry=${SCHEMA_REGISTRY_VERSION} && \
-    chmod 755 /usr/bin/docker-start.sh && \
-    apt-get clean && \
-    rm -rf /tmp/* /var/lib/apt/lists/*
 
-COPY LICENSE /usr/share/doc/schema-registry/licenses/LICENSE
+# Share the same base image to reduce layers
+FROM hypertrace/java:11
+
+MAINTAINER Hypertrace "https://www.hypertrace.org/"
+
+WORKDIR /opt/schema-registry
+
+ARG USER=schema-registry
+
+RUN adduser -g '' -h /opt/schema-registry -D ${USER}
+
+# use hard-coded username as a workaround to CircleCI build failure.
+# see https://github.com/moby/moby/issues/35018 for more details.
+# TODO: switch back when CircleCI config is using newer remote Docker
+COPY --from=schema-registry --chown=schema-registry /opt/schema-registry /opt/schema-registry
+# TODO COPY docker-healthcheck /usr/local/bin/
+
+USER ${USER}
 
 EXPOSE 8081
 
-CMD ["/usr/bin/docker-start.sh"]
+# We use start period of 10s to avoid marking Service Registry unhealthy on slow or contended CI hosts
+HEALTHCHECK --interval=2s --start-period=10s --timeout=1s CMD wget -qO- http://127.0.0.1:8081 &> /dev/null || exit 1
+
+ENTRYPOINT /opt/schema-registry/docker-start
