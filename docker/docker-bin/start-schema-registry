@@ -21,6 +21,6 @@ fi
 exec java \
   -cp 'share/java/confluent-common/*:share/java/rest-utils/*:share/java/schema-registry/*' \
   $JAVA_OPTS \
-  -Dlog4j.configurationFile=file:./etc/log4j2.properties \
   -Dschema-registry.log.dir=logs \
+  -Dlog4j.configuration=file:./etc/log4j.properties \
   io.confluent.kafka.schemaregistry.rest.SchemaRegistryMain etc/schema-registry.properties
