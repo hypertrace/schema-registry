@@ -23,4 +23,5 @@ exec java \
   $JAVA_OPTS \
   -Dschema-registry.log.dir=logs \
   -Dlog4j.configuration=file:./etc/log4j.properties \
+  -Djava.util.logging.config.file=./etc/logging.properties \
   io.confluent.kafka.schemaregistry.rest.SchemaRegistryMain etc/schema-registry.properties

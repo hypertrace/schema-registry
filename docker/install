@@ -17,6 +17,8 @@ rmdir etc/schema-registry
 
 # hush logs including HEALTHCHECK
 sed -i 's~INFO~WARN~g' etc/log4j.properties
+# stop JUL spam about io.confluent.kafka.schemaregistry.rest.resources.ServerMetadataResource
+echo 'org.glassfish.jersey.internal.inject.Providers = SEVERE' > etc/logging.properties
 
 # default to listen on 8081 and connect to "kafka" hostname on default port
 cat > etc/schema-registry.properties <<-EOF
