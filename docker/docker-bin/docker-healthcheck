@@ -1,0 +1,16 @@
+#!/bin/sh
+# HEALTHCHECK for use in `docker ps` or `docker-compose ps`.
+# It can also be used as a readiness probe in k8s
+
+set -ue
+
+IP="$(hostname -i || echo '127.0.0.1')"
+
+# There's no healthcheck api, so we just use root
+#
+# https://docs.confluent.io/current/schema-registry/develop/api.html
+if wget -qO- http://${IP}:8081 > /dev/null; then
+	exit 0
+fi
+
+exit 1
