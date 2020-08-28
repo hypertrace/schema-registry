@@ -28,7 +28,11 @@ USER ${USER}
 # Copy binaries and config we installed earlier
 COPY --from=install --chown=${USER} /install .
 
-ENV JAVA_OPTS="-Xms128M -Xmx200M -XX:+ExitOnOutOfMemoryError"
+# Use Schema Registry specific variable to reduce heap default
+ENV SCHEMA_REGISTRY_HEAP_OPTS="-Xms128M -Xmx200M"
+
+# Stop JUL spam about io.confluent.kafka.schemaregistry.rest.resources.ServerMetadataResource
+ENV SCHEMA_REGISTRY_LOG4J_OPTS="-Dlog4j.configuration=file:./etc/schema-registry/log4j.properties -Djava.util.logging.config.file=./etc/schema-registry/logging.properties"
 
 EXPOSE 8081
 
