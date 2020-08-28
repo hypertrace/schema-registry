@@ -12,7 +12,7 @@ RUN /tmp/install && rm /tmp/install
 # Share the same base image to reduce layers
 FROM hypertrace/java:11
 
-MAINTAINER Hypertrace "https://www.hypertrace.org/"
+LABEL maintainer="Hypertrace https://www.hypertrace.org/"
 
 # Add HEALTHCHECK and ENTRYPOINT scripts into the default search path
 COPY docker-bin/* /usr/local/bin/
