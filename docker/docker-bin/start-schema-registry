@@ -1,0 +1,24 @@
+#!/bin/sh
+# ENTRYPOINT script that starts Confluent Schema Registry
+#
+# This intentionally locates config using the current working directory, in order to consolidate
+# Dockerfile instructions to WORKDIR
+
+# Collect ENV only used to write config, notably not ENV used to launch Java
+SCHEMA_REGISTRY_ENV="$(printenv | grep ^SCHEMA_REGISTRY_|grep -v _OPTS)"
+
+# Enforce variable checks after we check ENV to avoid early exit
+set -ue
+
+# Only overwrite schema-registry.properties when ENV variables exist
+CONFIG=etc/schema-registry/schema-registry.properties
+if [ "$SCHEMA_REGISTRY_ENV" != "" ]; then
+  for line in $SCHEMA_REGISTRY_ENV; do
+    name=`echo $line | awk -F'=' '{print $1}' | sed 's/^SCHEMA_REGISTRY_//g' | tr '[:upper:]' '[:lower:]' | sed 's/_/./g'`
+    value=`echo $line | awk -F'=' '{print $2}'`
+    echo "$name=$value"
+  done > $CONFIG
+fi
+
+exec bin/schema-registry-run-class -name schemaRegistry \
+  io.confluent.kafka.schemaregistry.rest.SchemaRegistryMain $CONFIG
