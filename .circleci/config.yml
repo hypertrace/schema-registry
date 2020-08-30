@@ -52,18 +52,29 @@ jobs:
       - gradle:
           args: dockerBuildImages
       - save_populated_cache
-  publish:
+  merge-publish:
     executor: gradle_docker
     steps:
       - setup_build_environment
       - gradle:
-          args: :tag -Prelease
-      - add_ssh_keys:
-          fingerprints:
-            - "95:da:b2:1c:45:1b:b1:a9:c6:20:be:b2:e5:95:6e:a6"
-      - run: git push origin $(./gradlew -q :printVersion)
+          args: dockerPushImages
+  release-publish:
+    executor: gradle_docker
+    steps:
+      - setup_build_environment
+      - gradle:
+          args: :tag
+      - run:
+          name: Remove trigger tag
+          command: git tag -d release-$(git describe --abbrev=0)
       - gradle:
           args: dockerPushImages
+      - add_ssh_keys:
+          fingerprints:
+            - '95:da:b2:1c:45:1b:b1:a9:c6:20:be:b2:e5:95:6e:a6'
+      - run:
+          name: Update remote tags
+          command: git push origin :refs/tags/release-$(git describe --abbrev=0) refs/tags/$(git describe --abbrev=0)
   validate-charts:
     executor: helm
     steps:
@@ -71,9 +82,9 @@ jobs:
       - run:
           name: Helm Charts Lint and Template Render
           command: |
-            helm lint --strict --set global.env=dev ./helm/
-            helm template --set global.env=dev ./helm/
-  package-charts:
+            helm lint --strict ./helm/
+            helm template ./helm/
+  release-charts:
     executor: helm
     steps:
       - checkout
@@ -95,7 +106,7 @@ workflows:
     jobs:
       - build
       - validate-charts
-      - publish:
+      - merge-publish:
           context: hypertrace-publishing
           requires:
             - build
@@ -104,11 +115,19 @@ workflows:
             branches:
               only:
                 - main
-      - package-charts:
+      - release-publish:
           context: hypertrace-publishing
-          requires:
-            - publish
           filters:
             branches:
-              only:
-                - main
+              ignore: /.*/
+            tags:
+              only: /^release-.*/
+      - release-charts:
+          context: hypertrace-publishing
+          requires:
+            - release-publish
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^release-.*/
