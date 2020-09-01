@@ -19,8 +19,13 @@ spec:
   jobTemplate:
     spec:
       template:
-        {{- if .Values.backup.podAnnotations }}
         metadata:
+          labels:
+            app: {{ include "schema-registry.name" . }}-backup
+          {{- with .Values.backup.podLabels }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+        {{- if .Values.backup.podAnnotations }}
           annotations:
             {{- toYaml .Values.backup.podAnnotations | nindent 12 }}
         {{- end }}
