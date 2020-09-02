@@ -16,6 +16,9 @@ spec:
     metadata:
       labels:
         app: {{ include "schema-registry.name" . }}
+      {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- if .Values.podAnnotations }}
       annotations:
         {{- toYaml .Values.podAnnotations | nindent 8 }}
