@@ -6,6 +6,10 @@ This chart bootstraps a deployment of a Confluent Schema Registry
 ## How do we use schema-registry?
 Hypertrace uses Confluent schema-registry as a serialization mechanism for the avro messages published to Kafka and these Schemas are defined in the code along with their respective owner modules. All the avro messages schema are registered with the schema registry and kafka producer/consumers uses it while serializing/de-searlizing avro messages.
 
+| ![space-1.jpg]( https://hypertrace-docs.s3.amazonaws.com/ingestion-pipeline.png) | 
+|:--:| 
+| *Hypertrace Ingestion Pipeline* |
+
 ## Prerequisites
 * Kubernetes 1.10.0+
 * Helm 3.0.0+
