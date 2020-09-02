@@ -1,5 +1,14 @@
 # Schema Registry Helm Chart
+Confluent Schema Registry provides a serving layer for your metadata. It provides a RESTful interface for storing and retrieving Apache Avro schemas. It stores a versioned history of all schemas based on a specified subject name strategy, provides multiple compatibility settings and allows evolution of schemas according to the configured compatibility settings and expanded Avro support.
+
 This chart bootstraps a deployment of a Confluent Schema Registry
+
+## How do we use schema-registry?
+Hypertrace uses Confluent schema-registry as a serialization mechanism for the avro messages published to Kafka and these Schemas are defined in the code along with their respective owner modules. All the avro messages schema are registered with the schema registry and kafka producer/consumers uses it while serializing/de-searlizing avro messages.
+
+| ![space-1.jpg]( https://hypertrace-docs.s3.amazonaws.com/ingestion-pipeline.png) | 
+|:--:| 
+| *Hypertrace Ingestion Pipeline* |
 
 ## Prerequisites
 * Kubernetes 1.10.0+
