@@ -8,7 +8,7 @@ executors:
       - image: cimg/openjdk:14.0.2
   helm:
     docker:
-      - image: hypertrace/helm-gcs-packager:0.2.0
+      - image: hypertrace/helm-gcs-packager:0.3.0
 
 commands:
   gradle:
@@ -63,18 +63,7 @@ jobs:
     steps:
       - setup_build_environment
       - gradle:
-          args: :tag
-      - run:
-          name: Remove trigger tag
-          command: git tag -d release-$(git describe --abbrev=0)
-      - gradle:
           args: dockerPushImages
-      - add_ssh_keys:
-          fingerprints:
-            - '95:da:b2:1c:45:1b:b1:a9:c6:20:be:b2:e5:95:6e:a6'
-      - run:
-          name: Update remote tags
-          command: git push origin :refs/tags/release-$(git describe --abbrev=0) refs/tags/$(git describe --abbrev=0)
   validate-charts:
     executor: helm
     steps:
@@ -89,6 +78,15 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Add release tag
+          command: |
+            git config --global user.email "${CIRCLE_USERNAME}@hypertrace.org"
+            git config --global user.name "$CIRCLE_USERNAME"
+            git tag -am "Released by $CIRCLE_USERNAME" $(git describe --abbrev=0 --tags | sed 's/^release-//')
+      - run:
+          name: Remove trigger tag
+          command: git tag -d release-$(git describe --abbrev=0)
+      - run:
           name: Package and Publish Helm Charts
           # Read the "name:" from Chart.yaml. The chart version is <chart-name>-<semver git tag>
           command: |
@@ -99,6 +97,12 @@ jobs:
             helm repo add helm-gcs ${HELM_GCS_REPOSITORY}
             helm package --version ${CHART_VERSION} --app-version ${CHART_VERSION} ./helm/
             helm gcs push ${CHART_NAME}-${CHART_VERSION}.tgz helm-gcs --public --retry
+      - add_ssh_keys:
+          fingerprints:
+            - '95:da:b2:1c:45:1b:b1:a9:c6:20:be:b2:e5:95:6e:a6'
+      - run:
+          name: Update remote tags
+          command: git push origin refs/tags/$(git describe --abbrev=0) :refs/tags/release-$(git describe --abbrev=0)
 
 workflows:
   version: 2
