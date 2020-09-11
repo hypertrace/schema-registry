@@ -6,13 +6,12 @@ ENV CONFLUENT_VERSION=5.5.1 SCALA_VERSION=2.12
 
 USER root
 WORKDIR /install
-ADD install /tmp/install
-RUN /tmp/install && rm /tmp/install
+COPY install.sh /tmp/
+RUN /tmp/install.sh && rm /tmp/install.sh
 
 # Share the same base image to reduce layers
 FROM hypertrace/java:11
-
-LABEL maintainer="Hypertrace https://www.hypertrace.org/"
+LABEL MAINTAINER Hypertrace "https://www.hypertrace.org/"
 
 # Add HEALTHCHECK and ENTRYPOINT scripts into the default search path
 COPY docker-bin/* /usr/local/bin/

@@ -24,7 +24,7 @@ sed -i 's~INFO~WARN~g' etc/schema-registry/log4j.properties
 echo 'org.glassfish.jersey.internal.inject.Providers = SEVERE' > etc/schema-registry/logging.properties
 
 # default to listen on 8081 and connect to "kafka" hostname on default port
-cat > etc/schema-registry/schema-registry.properties <<-EOF
+cat > etc/schema-registry/schema-registry.properties <<-'EOF'
 avro.compatibility.level=full_transitive
 kafkastore.group.id=hypertrace-schema-registry
 listeners=http://0.0.0.0:8081
