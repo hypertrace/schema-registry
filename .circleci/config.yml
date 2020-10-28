@@ -120,7 +120,9 @@ workflows:
       - build:
           context:
             - dockerhub-read
-      - validate-charts
+      - validate-charts:
+          context:
+            - dockerhub-read
       - merge-publish:
           context:
             - hypertrace-publishing
@@ -142,7 +144,9 @@ workflows:
             tags:
               only: /^release-.*/
       - release-charts:
-          context: hypertrace-publishing
+          context:
+            - hypertrace-publishing
+            - dockerhub-read
           requires:
             - release-publish
           filters:
