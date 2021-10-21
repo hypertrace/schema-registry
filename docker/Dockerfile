@@ -33,6 +33,9 @@ ENV SCHEMA_REGISTRY_HEAP_OPTS="-Xms128M -Xmx200M"
 # Stop JUL spam about io.confluent.kafka.schemaregistry.rest.resources.ServerMetadataResource
 ENV SCHEMA_REGISTRY_LOG4J_OPTS="-Dlog4j.configuration=file:./etc/schema-registry/log4j.properties -Djava.util.logging.config.file=./etc/schema-registry/logging.properties"
 
+RUN mkdir -p /opt/schema-registry/logs && \
+    chmod a+w /opt/schema-registry/etc/schema-registry/schema-registry.properties /opt/schema-registry/logs
+
 EXPOSE 8081
 
 # We use start period of 30s to avoid marking the container unhealthy on slow or contended CI hosts
