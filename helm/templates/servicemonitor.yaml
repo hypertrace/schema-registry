@@ -15,7 +15,7 @@ spec:
         values:
           - {{ template "schema-registry.name" . }}
   endpoints:
-    - port: prometheus-jmx
+    - port: http-metrics
       interval: {{ .Values.servicemonitor.interval }}
       {{- if .Values.servicemonitor.secure }}
       scheme: https
