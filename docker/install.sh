@@ -25,7 +25,7 @@ echo 'org.glassfish.jersey.internal.inject.Providers = SEVERE' > etc/schema-regi
 
 # default to listen on 8081 and connect to "kafka" hostname on default port
 cat > etc/schema-registry/schema-registry.properties <<-'EOF'
-avro.compatibility.level=full_transitive
+avro.compatibility.level=full
 kafkastore.group.id=hypertrace-schema-registry
 listeners=http://0.0.0.0:8081
 host.name=schema-registry

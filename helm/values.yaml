@@ -24,7 +24,7 @@ kafka:
 heapOptions: "-Xms128M -Xmx200M"
 
 # Avro Compatibility  Level
-avroCompatibilityLevel: "full_transitive"
+avroCompatibilityLevel: "full"
 
 # Resources requested by pod
 resources:
