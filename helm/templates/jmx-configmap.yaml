@@ -13,15 +13,59 @@ data:
     ssl: false
     rules:
       - pattern : 'kafka.schema.registry<type=jetty-metrics>([^:]+):'
-        name: "cp_kafka_schema_registry_jetty_metrics_$1"
+        name: schema_registry_$1
+        lables:
+          type: jetty_metrics
       - pattern : 'kafka.schema.registry<type=master-slave-role>([^:]+):'
-        name: "cp_kafka_schema_registry_master_slave_role"
-      - pattern : 'kafka.schema.registry<type=jersey-metrics>([<>])*(.+)\.(([^-]*)-(.+)):'
-        name: "cp_kafka_schema_registry_endpoint"
+        name: schema_registry_$1
+        lables:
+          type: master_slave_role
+      - pattern : 'kafka.schema.registry<type=jersey-metrics><>(.+)\.(.+):'
+        name: schema_registry_$2
         labels:
-          name: "$2"
-          category: "$4"
-          metric: "$5"
-      - pattern : 'kafka.schema.registry<type=jersey-metrics>([^:]+):'
-        name: "cp_kafka_schema_registry_jersey_metrics_$1"
+          api_endpoint: $1
+          type: jersey_metrics
+      - pattern : 'kafka.schema.registry<type=(api-(.+))-count>(.*):'
+        name: schema_registry_$1
+        labels:
+          type: api-metrics
+      - pattern : 'kafka.schema.registry<type=([^-]+)-schemas-([^>]+)>(.*):'
+        name: schema_registry_schemas_stats
+        labels:
+          schema: $1
+          operation: $2
+          type: schemas_stats
+      - pattern : 'kafka.schema.registry<type=(registered|deleted|custom-schema-provider)-count>(.*):'
+        name: schema_registry_schemas_stats
+        labels:
+          schema: total
+          operation: $1
+          type: schemas_stats
+      - pattern: 'java.lang<type=Memory><(\w+)MemoryUsage>(\w+): (\d+)'
+        name: jvm_memory_$2_bytes
+        labels:
+          area: $1
+        value: $3
+        type: GAUGE
+      - pattern: 'java.nio<name=(direct|mapped), type=BufferPool><>MemoryUsed: (\d+)'
+        name: java_nio_$1_memoryused
+        value: $2
+        type: GAUGE
+      - pattern: 'java.lang<name=([^,]+), type=GarbageCollector><>CollectionTime: (\d+)'
+        name: jvm_gc_duration_millis
+        value: $2
+        labels:
+          area: $1
+        type: GAUGE
+      - pattern: 'java.lang<name=([^,]+), type=GarbageCollector><>CollectionCount: (\d+)'
+        name: jvm_gc_collection_count
+        value: $2
+        labels:
+          area: $1
+        type: GAUGE
+      - pattern: "java.lang<type=OperatingSystem><>((System|Process|(.*FileDescriptorCount))(.*)): (.*)"
+        name: "java_lang_operatingsystem_$1"
+        value: $5
+      - pattern: "java.lang<type=Threading><>(.*)ThreadCount"
+        name: "java_lang_threading_$1threadcount"
 {{- end }}
