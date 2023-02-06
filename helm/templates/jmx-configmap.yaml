@@ -14,11 +14,11 @@ data:
     rules:
       - pattern : 'kafka.schema.registry<type=jetty-metrics>([^:]+):'
         name: schema_registry_$1
-        lables:
+        labels:
           type: jetty_metrics
       - pattern : 'kafka.schema.registry<type=master-slave-role>([^:]+):'
         name: schema_registry_$1
-        lables:
+        labels:
           type: master_slave_role
       - pattern : 'kafka.schema.registry<type=jersey-metrics><>(.+)\.(.+):'
         name: schema_registry_$2
