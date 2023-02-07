@@ -4,7 +4,7 @@ set -eux
 
 echo "*** Downloading Schema Registry"
 # download confluent binaries
-curl -sSL http://packages.confluent.io/archive/7.2/confluent-community-$CONFLUENT_VERSION.tar.gz | tar xz \
+curl -sSL http://packages.confluent.io/archive/7.3/confluent-community-$CONFLUENT_VERSION.tar.gz | tar xz \
 confluent-$CONFLUENT_VERSION/bin/schema-registry-run-class \
 confluent-$CONFLUENT_VERSION/etc/schema-registry \
 confluent-$CONFLUENT_VERSION/share/java/confluent-common \
