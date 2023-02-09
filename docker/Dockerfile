@@ -2,7 +2,7 @@
 FROM cimg/openjdk:14.0.2 AS install
 
 # Use latest stable release here
-ENV CONFLUENT_VERSION=7.2.1
+ENV CONFLUENT_VERSION=7.3.1
 
 USER root
 WORKDIR /install
