@@ -25,7 +25,7 @@ jobs:
       - name: Run Trivy vulnerability scanner
         uses: hypertrace/github-actions/trivy-image-scan@main
         with:
-          image: hypertrace/pinot
+          image: hypertrace/schema-registry
           output-mode: github
 
   validate-helm-charts:
