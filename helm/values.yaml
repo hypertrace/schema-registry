@@ -12,7 +12,9 @@ image:
 
 imagePullSecrets: []
 
-configurationOverrides: {}
+configurationOverrides:
+  kafkastore.timeout.ms: 2000
+
 customEnv: {}
 schemaRegistryOpts: {}
 overrideGroupId: ""
