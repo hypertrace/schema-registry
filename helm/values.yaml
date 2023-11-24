@@ -143,6 +143,14 @@ backup:
   imagePullSecrets: []
   cluster: "test"
   gcloud: {}
+  # GCS Bucket Configuration
+  # gcloud:
+  #   bucket: bucketName
+  #   secretName: gcs-bucket-secret
+  aws: {}
+  # AWS S3 Bucket Configuration
+  # aws:
+  #   bucket: bucketName/backups
   affinity: {}
   nodeSelector: {}
   securityContext: {}

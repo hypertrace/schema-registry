@@ -45,23 +45,36 @@ spec:
                 - |
                   timestamp=$(date +%Y-%m-%d-%H-%M-%S)
                   month=${timestamp:0:7}
-                  BACKUP_LOCATION=gs://$BUCKET/schema-registry/$CLUSTER_NAME/$month
                   unset JMX_PORT KAFKA_OPTS KAFKA_HEAP_OPTS KAFKA_LOG4J_OPTS
                   /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server $KAFKA_BOOTSTRAP_SERVERS --topic $KAFKA_TOPIC --from-beginning --property print.key=true --timeout-ms 60000 1> schemas-${timestamp}.log || exit 2
                   tar cvfz schemas-${timestamp}.tar.gz schemas-$timestamp.log || exit 2
+                  {{- if .Values.backup.gcloud }}
+                  BACKUP_LOCATION=gs://$BUCKET/schema-registry/$CLUSTER_NAME/$month
                   gcloud auth activate-service-account --key-file $GOOGLE_APPLICATION_CREDENTIALS || exit 2
                   gsutil cp schemas-${timestamp}.tar.gz $BACKUP_LOCATION/schemas-${timestamp}.tar.gz || exit 2
+                  {{- end }}
+                  {{- if .Values.backup.aws }}
+                  BACKUP_LOCATION=s3://$S3_BUCKET/${CLUSTER_NAME}-backups/schema-registry/$month
+                  aws s3 cp schemas-${timestamp}.tar.gz $BACKUP_LOCATION/schemas-${timestamp}.tar.gz || exit 2
+                  {{- end }}
               env:
                 - name: CLUSTER_NAME
                   value: {{ .Values.backup.cluster }}
+                {{- if .Values.backup.gcloud }}
                 - name: BUCKET
                   value: {{ .Values.backup.gcloud.bucket }}
+                - name: GOOGLE_APPLICATION_CREDENTIALS
+                  value: "/accounts/key.json"
+                {{- end }}
+                {{- if .Values.backup.aws }}
+                - name: S3_BUCKET
+                  value: {{ .Values.backup.aws.bucket }}
+                {{- end }}
                 - name: KAFKA_BOOTSTRAP_SERVERS
                   value: {{ template "schema-registry.kafka.bootstrapServers" . }}
                 - name: KAFKA_TOPIC
                   value: {{ .Values.backup.topic }}
-                - name: GOOGLE_APPLICATION_CREDENTIALS
-                  value: "/accounts/key.json"
+              {{- if .Values.backup.gcloud }}
               volumeMounts:
                 - name: gcs-iam-secret
                   mountPath: "/accounts"
@@ -69,6 +82,7 @@ spec:
             - name: gcs-iam-secret
               secret:
                 secretName: {{ .Values.backup.gcloud.secretName }}
+              {{- end }}
           {{- if .Values.backup.imagePullSecrets }}
           imagePullSecrets:
             {{- toYaml .Values.imagePullSecrets | nindent 12 }}

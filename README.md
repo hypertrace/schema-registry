@@ -27,7 +27,7 @@ This chart will do the following:
 * Optionally add an [Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/) resource.
 * Optionally start a JMX Exporter container inside schema registry pods.
 * Optionally create a Prometheus ServiceMonitor for each enabled jmx exporter container.
-* Optionally add a cronjob to take backup the schema registry topic and save it in [Google Cloud Storage](https://cloud.google.com/storage).
+* Optionally add a cronjob to take backup the schema registry topic and save it in [Google Cloud Storage](https://cloud.google.com/storage) or [AWS S3](https://aws.amazon.com/pm/serv-s3/)
 
 
 ## Installing the Chart
