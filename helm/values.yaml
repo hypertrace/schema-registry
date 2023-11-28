@@ -165,6 +165,7 @@ compatibilityJob:
   ttlSecondsAfterFinished: 600
   activeDeadlineSeconds: 300
   image: curlimages/curl:8.1.0
+  schemaRegistryUrl: http://schema-registry-service:8081
   config:
     # - subject1:BACKWARD
     # - subject2:FORWARD
