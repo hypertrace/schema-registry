@@ -155,3 +155,20 @@ servicemonitor:
   interval: 15s
   secure: false
   tlsConfig: {}
+
+compatibilityJob:
+  enabled: false
+  name: schema-registry-compatibility-job
+  hook: post-install, pre-upgrade
+  hookDeletePolicy: before-hook-creation
+  backoffLimit: 3
+  ttlSecondsAfterFinished: 600
+  activeDeadlineSeconds: 300
+  image: curlimages/curl:8.1.0
+  schemaRegistryUrl: http://schema-registry-service:8081
+  config:
+    # - subject1:BACKWARD
+    # - subject2:FORWARD
+  command: [ "/bin/sh", "-cx" ]
+  restartPolicy: Never
+  terminationGracePeriodSeconds: 30
