@@ -159,7 +159,7 @@ servicemonitor:
 compatibilityJob:
   enabled: false
   name: schema-registry-compatibility-job
-  hook: pre-install, pre-upgrade
+  hook: post-install, pre-upgrade
   hookDeletePolicy: before-hook-creation
   backoffLimit: 3
   ttlSecondsAfterFinished: 600
