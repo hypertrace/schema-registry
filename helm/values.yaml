@@ -157,7 +157,7 @@ servicemonitor:
   tlsConfig: {}
 
 compatibilityJob:
-  enabled: true
+  enabled: false
   name: schema-registry-compatibility-job
   hook: pre-install, pre-upgrade
   hookDeletePolicy: before-hook-creation

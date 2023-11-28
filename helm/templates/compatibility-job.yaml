@@ -1,4 +1,4 @@
-{{- if .Values.compatibilityJob.enabled }}
+{{- if and .Values.compatibilityJob.enabled .Values.compatibilityJob.config }}
 apiVersion: batch/v1
 kind: Job
 metadata:
