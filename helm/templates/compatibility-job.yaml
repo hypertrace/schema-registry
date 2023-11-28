@@ -1,0 +1,43 @@
+{{- if .Values.compatibilityJob.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Values.compatibilityJob.name }}
+  labels:
+  annotations:
+    "helm.sh/hook": {{ .Values.compatibilityJob.hook }}
+    "helm.sh/hook-delete-policy": {{ .Values.compatibilityJob.hookDeletePolicy }}
+spec:
+  backoffLimit: {{ .Values.compatibilityJob.backoffLimit }}
+  ttlSecondsAfterFinished: {{ int .Values.compatibilityJob.ttlSecondsAfterFinished }}
+  activeDeadlineSeconds: {{ int .Values.compatibilityJob.activeDeadlineSeconds }}
+  template:
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}    
+      containers:
+        - args:
+          - |
+            for arg in  {{- range .Values.compatibilityJob.config }} {{ . | quote }} {{- end }};
+            do
+            subject=`echo ${arg} |  cut -d":" -f1`;
+            compatibility=`echo ${arg} |  cut -d":" -f2`;
+            curl -f -X PUT -H "Content-Type: application/json" --data '{"compatibility": "'$compatibility'"}' \
+            http://schema-registry-service:8081/config/${subject};
+            res=$?;
+            if test "$res" != "0";
+            then
+                curl -s -X POST http://127.0.0.1:15020/quitquitquit;
+                exit $res;
+            fi
+            done
+            curl -s -X POST http://127.0.0.1:15020/quitquitquit  || exit 0
+          command: {{.Values.compatibilityJob.command | toJson }}
+          image: {{ .Values.compatibilityJob.image }}
+          imagePullPolicy: IfNotPresent
+          name: pre-install-container
+      restartPolicy: {{ .Values.compatibilityJob.restartPolicy }}
+      terminationGracePeriodSeconds: {{ .Values.compatibilityJob.terminationGracePeriodSeconds }}
+{{- end }}
