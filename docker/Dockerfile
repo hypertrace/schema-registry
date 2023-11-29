@@ -1,4 +1,3 @@
-# Using the same image as we use in CircleCI to avoid transfer costs
 FROM ubuntu:22.04 AS install
 
 # Use latest stable release here
