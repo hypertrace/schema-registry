@@ -9,7 +9,10 @@ confluent-$CONFLUENT_VERSION/bin/schema-registry-run-class \
 confluent-$CONFLUENT_VERSION/etc/schema-registry \
 confluent-$CONFLUENT_VERSION/share/java/confluent-common \
 confluent-$CONFLUENT_VERSION/share/java/rest-utils \
-confluent-$CONFLUENT_VERSION/share/java/schema-registry
+confluent-$CONFLUENT_VERSION/share/java/schema-registry \
+confluent-$CONFLUENT_VERSION/share/java/kafka \
+confluent-$CONFLUENT_VERSION/share/java/ksqldb \
+confluent-$CONFLUENT_VERSION/share/java/kafka-serde-tools/commons-codec-1.15.jar \
 
 mv confluent-$CONFLUENT_VERSION/* .
 
