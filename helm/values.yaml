@@ -165,3 +165,4 @@ servicemonitor:
   interval: 15s
   secure: false
   tlsConfig: {}
+
