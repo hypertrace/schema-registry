@@ -1,6 +1,6 @@
 {{- if .Values.ingress.enabled }}
 {{- $serviceName := include "schema-registry.fullname" . -}}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ include "schema-registry.fullname" . }}
@@ -15,9 +15,12 @@ spec:
         paths:
           {{- range .paths }}
           - path: {{ .path | default "/" | quote }}
+            pathType: Prefix
             backend:
-              serviceName: {{ default $serviceName .serviceName | quote }}
-              servicePort: {{ default "8081" .port }}
+              service:
+                name: {{ default $serviceName .serviceName | quote }}
+                port:
+                  number: {{ default "8081" .port }}
           {{- end }}
       {{- if .name }}
       host: {{ .name | quote }}
