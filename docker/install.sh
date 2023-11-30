@@ -4,12 +4,15 @@ set -eux
 
 echo "*** Downloading Schema Registry"
 # download confluent binaries
-curl -sSL http://packages.confluent.io/archive/7.3/confluent-community-$CONFLUENT_VERSION.tar.gz | tar xz \
+curl -sSL http://packages.confluent.io/archive/7.5/confluent-community-$CONFLUENT_VERSION.tar.gz | tar xz \
 confluent-$CONFLUENT_VERSION/bin/schema-registry-run-class \
 confluent-$CONFLUENT_VERSION/etc/schema-registry \
 confluent-$CONFLUENT_VERSION/share/java/confluent-common \
 confluent-$CONFLUENT_VERSION/share/java/rest-utils \
-confluent-$CONFLUENT_VERSION/share/java/schema-registry
+confluent-$CONFLUENT_VERSION/share/java/schema-registry \
+confluent-$CONFLUENT_VERSION/share/java/kafka \
+confluent-$CONFLUENT_VERSION/share/java/ksqldb \
+confluent-$CONFLUENT_VERSION/share/java/kafka-serde-tools/commons-codec-1.15.jar \
 
 mv confluent-$CONFLUENT_VERSION/* .
 

@@ -1,13 +1,19 @@
-# Using the same image as we use in CircleCI to avoid transfer costs
-FROM cimg/openjdk:14.0.2 AS install
+FROM ubuntu:22.04 AS install
 
 # Use latest stable release here
-ENV CONFLUENT_VERSION=7.3.1
+ENV CONFLUENT_VERSION=7.5.2
 
 USER root
 WORKDIR /install
 COPY install.sh /tmp/
+RUN apt-get update && apt-get install curl -y
 RUN /tmp/install.sh && rm /tmp/install.sh
+RUN rm /install/share/java/schema-registry/zookeeper-3.6.3.jar /install/share/java/schema-registry/zookeeper-jute-3.6.3.jar && \
+    rm /install/share/java/kafka/zookeeper-3.6.4.jar /install/share/java/kafka/zookeeper-jute-3.6.4.jar && \
+    curl -sSL -o /install/share/java/schema-registry/zookeeper-3.8.3.jar https://repo1.maven.org/maven2/org/apache/zookeeper/zookeeper/3.8.3/zookeeper-3.8.3.jar && \
+    curl -sSL -o /install/share/java/schema-registry/zookeeper-jute-3.8.3.jar https://repo1.maven.org/maven2/org/apache/zookeeper/zookeeper-jute/3.8.3/zookeeper-jute-3.8.3.jar && \
+    cp /install/share/java/schema-registry/zookeeper-3.8.3.jar /install/share/java/kafka/zookeeper-3.8.3.jar && \
+    cp /install/share/java/schema-registry/zookeeper-jute-3.8.3.jar /install/share/java/kafka/zookeeper-jute-3.8.3.jar
 
 # Share the same base image to reduce layers
 FROM hypertrace/java:11
