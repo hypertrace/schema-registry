@@ -9,6 +9,7 @@ replicaCount: 1
 image:
   repository: "hypertrace/schema-registry"
   pullPolicy: "IfNotPresent"
+  tag: ""
 
 imagePullSecrets: []
 
