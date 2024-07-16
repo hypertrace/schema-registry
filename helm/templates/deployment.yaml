@@ -41,6 +41,10 @@ spec:
               containerPort: {{ .Values.prometheus.jmx.port }}
           resources:
             {{- toYaml .Values.prometheus.jmx.resources | nindent 12 }}
+          {{- with .Values.containerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           volumeMounts:
             - name: jmx-config
               mountPath: /etc/jmx-schema-registry
@@ -94,7 +98,7 @@ spec:
             - name: JMX_PORT
               value: {{ .Values.jmx.port | quote }}
             {{- end }}
-          {{- with .Values.securityContext }}
+          {{- with .Values.containerSecurityContext }}
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
@@ -105,6 +109,7 @@ spec:
           configMap:
             name: {{ template "schema-registry.fullname" . }}-jmx-configmap
       {{- end }}
+      enableServiceLinks: false
       {{- if .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml .Values.imagePullSecrets | nindent 8 }}
