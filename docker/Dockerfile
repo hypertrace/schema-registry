@@ -1,7 +1,7 @@
 FROM ubuntu:22.04 AS install
 
 # Use latest stable release here
-ENV CONFLUENT_VERSION=7.5.4
+ENV CONFLUENT_VERSION=7.7.0
 
 USER root
 WORKDIR /install
