@@ -1,4 +1,4 @@
-{{- .Values.servicemonitor.enabled }}
+{{- if .Values.servicemonitor.enabled }}
 {{- if and ( .Capabilities.APIVersions.Has "monitoring.coreos.com/v1" ) ( .Values.prometheus.jmx.enabled ) }}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
