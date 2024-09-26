@@ -1,4 +1,5 @@
-{{- if and ( .Values.servicemonitor.enabled ) ( .Capabilities.APIVersions.Has "monitoring.coreos.com/v1" ) ( .Values.prometheus.jmx.enabled ) }}
+{{- .Values.servicemonitor.enabled }}
+{{- if and ( .Capabilities.APIVersions.Has "monitoring.coreos.com/v1" ) ( .Values.prometheus.jmx.enabled ) }}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
@@ -25,4 +26,5 @@ spec:
   namespaceSelector:
     matchNames:
       - {{ .Release.Namespace }}
+{{- end }}
 {{- end }}
