@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ include "schema-registry.fullname" . }}
   labels:
@@ -7,21 +7,23 @@ metadata:
 spec:
   replicas: {{ .Values.replicaCount }}
   revisionHistoryLimit: 2
+  serviceName: {{ template "schema-registry.headless.service" . }}
   selector:
     matchLabels:
       app: {{ include "schema-registry.name" . }}
-  strategy:
-    {{- toYaml .Values.strategy | nindent 4 }}
+  updateStrategy:
+    {{- toYaml .Values.updateStrategy | nindent 4 }}
+  podManagementPolicy: {{ .Values.podManagementPolicy }}
   template:
     metadata:
       labels:
         app: {{ include "schema-registry.name" . }}
-      {{- with .Values.podLabels }}
+        {{- with merge .Values.podLabels .Values.commonPodLabels }}
         {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- if .Values.podAnnotations }}
+        {{- end }}
+      {{- with merge .Values.podAnnotations .Values.commonPodAnnotations }}
       annotations:
-        {{- toYaml .Values.podAnnotations | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
     spec:
       serviceAccountName: {{ template "schema-registry.serviceAccountName" . }}
