@@ -28,29 +28,6 @@ spec:
     spec:
       serviceAccountName: {{ template "schema-registry.serviceAccountName" . }}
       containers:
-        {{- if .Values.prometheus.jmx.enabled }}
-        - name: prometheus-jmx-exporter
-          image: "{{ .Values.prometheus.jmx.image.repository }}:{{ .Values.prometheus.jmx.image.tag }}"
-          imagePullPolicy: "{{ .Values.prometheus.jmx.image.pullPolicy }}"
-          command:
-            - java
-            - -jar
-            - jmx_prometheus_httpserver.jar
-            - {{ .Values.prometheus.jmx.port | quote }}
-            - /etc/jmx-schema-registry/jmx-schema-registry-prometheus.yml
-          ports:
-            - name: http-metrics
-              containerPort: {{ .Values.prometheus.jmx.port }}
-          resources:
-            {{- toYaml .Values.prometheus.jmx.resources | nindent 12 }}
-          {{- with .Values.containerSecurityContext }}
-          securityContext:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          volumeMounts:
-            - name: jmx-config
-              mountPath: /etc/jmx-schema-registry
-        {{- end }}
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
@@ -104,6 +81,29 @@ spec:
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+        {{- if .Values.prometheus.jmx.enabled }}
+        - name: prometheus-jmx-exporter
+          image: "{{ .Values.prometheus.jmx.image.repository }}:{{ .Values.prometheus.jmx.image.tag }}"
+          imagePullPolicy: "{{ .Values.prometheus.jmx.image.pullPolicy }}"
+          command:
+            - java
+            - -jar
+            - jmx_prometheus_httpserver.jar
+            - {{ .Values.prometheus.jmx.port | quote }}
+            - /etc/jmx-schema-registry/jmx-schema-registry-prometheus.yml
+          ports:
+            - name: http-metrics
+              containerPort: {{ .Values.prometheus.jmx.port }}
+          resources:
+            {{- toYaml .Values.prometheus.jmx.resources | nindent 12 }}
+          {{- with .Values.containerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: jmx-config
+              mountPath: /etc/jmx-schema-registry
+        {{- end }}
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       {{- if .Values.prometheus.jmx.enabled }}
       volumes:
