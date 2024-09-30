@@ -17,5 +17,6 @@ data:
     {{- if .Values.logging.extraLogConfig }}
     {{- range $key,$value := .Values.logging.extraLogConfig }}
     log4j.logger.{{ $value.name }}={{ $value.level }}, stdout
+    log4j.additivity.{{ $value.name }}=false
     {{- end }}
     {{- end }}
