@@ -76,3 +76,10 @@ Default GroupId to Release Name but allow it to be overridden
 {{- .Release.Name -}}
 {{- end -}}
 {{- end -}}
+
+{{- /*
+Form the schema-registry headless service name
+*/ -}}
+{{- define "schema-registry.headless.service" -}}
+{{- printf "%s-headless" (include "schema-registry.fullname" .) | trunc 63 }}
+{{- end -}}

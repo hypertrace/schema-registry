@@ -1,0 +1,145 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "schema-registry.fullname" . }}
+  labels:
+    {{- include "schema-registry.labels.standard" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  revisionHistoryLimit: 2
+  serviceName: {{ template "schema-registry.headless.service" . }}
+  selector:
+    matchLabels:
+      app: {{ include "schema-registry.name" . }}
+  updateStrategy:
+    {{- toYaml .Values.updateStrategy | nindent 4 }}
+  podManagementPolicy: {{ .Values.podManagementPolicy }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "schema-registry.name" . }}
+        {{- with merge .Values.podLabels .Values.commonPodLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with merge .Values.podAnnotations .Values.commonPodAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      serviceAccountName: {{ template "schema-registry.serviceAccountName" . }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+            {{- if .Values.jmx.enabled }}
+            - name: jmx
+              containerPort: {{ .Values.jmx.port }}
+            {{- end }}
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: log-config
+              mountPath: /opt/schema-registry/etc/schema-registry/log4j.properties
+              subPath: "log4j.properties"
+          env:
+            - name: SCHEMA_REGISTRY_HOST_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: SCHEMA_REGISTRY_LISTENERS
+              value: http://0.0.0.0:{{ .Values.service.port }}
+            - name: SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS
+              value: {{ .Values.kafka.protocol }}://{{ template "schema-registry.kafka.bootstrapServers" . }}
+            - name: SCHEMA_REGISTRY_KAFKASTORE_GROUP_ID
+              value: {{ template "schema-registry.groupId" . }}
+            - name: SCHEMA_REGISTRY_MASTER_ELIGIBILITY
+              value: "true"
+            - name: SCHEMA_REGISTRY_HEAP_OPTS
+              value: "{{ .Values.heapOptions }}"
+            - name: SCHEMA_REGISTRY_AVRO_COMPATIBILITY_LEVEL
+              value: "{{ .Values.avroCompatibilityLevel }}"
+            {{- range $configName, $configValue := .Values.configurationOverrides }}
+            - name: SCHEMA_REGISTRY_{{ $configName | replace "." "_" | upper }}
+              value: {{ $configValue | quote }}
+            {{- end }}
+            {{- range $key, $value := .Values.customEnv }}
+            - name: {{ $key | quote }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- if .Values.schemaRegistryOpts }}
+            - name: SCHEMA_REGISTRY_OPTS
+              value: "{{ .Values.schemaRegistryOpts }}"
+            {{- end }}
+            {{- if .Values.jmx.enabled }}
+            - name: JMX_PORT
+              value: {{ .Values.jmx.port | quote }}
+            {{- end }}
+          {{- with .Values.containerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+        {{- if .Values.prometheus.jmx.enabled }}
+        - name: prometheus-jmx-exporter
+          image: "{{ .Values.prometheus.jmx.image.repository }}:{{ .Values.prometheus.jmx.image.tag }}"
+          imagePullPolicy: "{{ .Values.prometheus.jmx.image.pullPolicy }}"
+          command:
+            - java
+            - -jar
+            - jmx_prometheus_httpserver.jar
+            - {{ .Values.prometheus.jmx.port | quote }}
+            - /etc/jmx-schema-registry/jmx-schema-registry-prometheus.yml
+          ports:
+            - name: http-metrics
+              containerPort: {{ .Values.prometheus.jmx.port }}
+          resources:
+            {{- toYaml .Values.prometheus.jmx.resources | nindent 12 }}
+          {{- with .Values.containerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: jmx-config
+              mountPath: /etc/jmx-schema-registry
+        {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      {{- if .Values.prometheus.jmx.enabled }}
+      volumes:
+        - name: log-config
+          configMap:
+            name: {{ template "schema-registry.fullname" . }}-log-configmap
+        - name: jmx-config
+          configMap:
+            name: {{ template "schema-registry.fullname" . }}-jmx-configmap
+      {{- end }}
+      enableServiceLinks: false
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml .Values.imagePullSecrets | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.hostNetwork }}
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      {{- end }}

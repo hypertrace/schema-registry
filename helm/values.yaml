@@ -52,15 +52,18 @@ readinessProbe:
   periodSeconds: 10
 
 # upgrade strategy
-strategy:
+updateStrategy:
   type: RollingUpdate
-  rollingUpdate:
-    maxSurge: 1
-    maxUnavailable: 1
+
+podManagementPolicy: OrderedReady
 
 podAnnotations: {}
 
 podLabels: {}
+
+commonPodLabels: {}
+
+commonPodAnnotations: {}
 
 terminationGracePeriodSeconds: 30
 
@@ -103,6 +106,7 @@ service:
 # Ingress Resource
 ingress:
   enabled: false
+  annotations: {}
   ## Ingress hostnames
   ## Must be provided if Ingress is enabled
   hosts:
@@ -135,46 +139,6 @@ prometheus:
       requests:
         cpu: "0.1"
         memory: "256Mi"
-
-backup:
-  enabled: false
-  topic: "_schemas"
-  schedule: "0 1 * * *"
-  startingDeadlineSeconds: 86400
-  concurrencyPolicy: Forbid
-  image:
-    repository: "hypertrace/kafka"
-    tag: "0.1.0"
-    pullPolicy: "IfNotPresent"
-  imagePullSecrets: []
-  cluster: "test"
-  resources: {}
-  gcloud: {}
-  # GCS Bucket Configuration
-  # gcloud:
-  #   bucket: bucketName
-  #   secretName: gcs-bucket-secret
-  aws: {}
-  # AWS S3 Bucket Configuration
-  # aws:
-  #   bucket: bucketName/backups
-  affinity: {}
-  nodeSelector: {}
-  podSecurityContext: {}
-  containerSecurityContext:
-    allowPrivilegeEscalation: false
-    capabilities:
-      drop:
-        - ALL
-    runAsUser: 1000
-    runAsGroup: 1000
-    runAsNonRoot: true
-    readOnlyRootFilesystem: true
-    seccompProfile:
-      type: RuntimeDefault
-  tolerations: []
-  podAnnotations: {}
-  podLabels: {}
 
 servicemonitor:
   enabled: false
