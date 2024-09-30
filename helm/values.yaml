@@ -145,3 +145,29 @@ servicemonitor:
   interval: 15s
   secure: false
   tlsConfig: {}
+
+compatibilityChanger:
+  enabled: true
+  image:
+    repository: hypertrace/compatibility-changer
+    tagOverride: ""
+  config:
+    name: "compatibility-changer-configmap"
+    defaultSchemaType: "NONE"
+  cronjob:
+    podLabels: {}
+    podAnnotations: {}
+    schedule: "0 * * * *" # Hourly.
+    suspend: false
+    successfulJobsHistoryLimit: 3
+    resources: {}
+    concurrencyPolicy: Forbid
+    restartPolicy: Never
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    tolerations: []
+    activeDeadlineSeconds: 2700
+    startingDeadlineSeconds: 300
+
+

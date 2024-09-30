@@ -1,0 +1,13 @@
+{{- if .Values.compatibilityChanger.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.compatibilityChanger.config.name }}
+  labels:
+    release: {{ .Release.Name }}
+data:
+  application.conf: |
+    {
+      "defaultSchemaType": {{ .Values.compatibilityChanger.config.defaultSchemaType }}
+    }
+  {{- end }}
