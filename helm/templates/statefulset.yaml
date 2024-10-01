@@ -44,6 +44,10 @@ spec:
             {{- toYaml .Values.readinessProbe | nindent 12 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: log-config
+              mountPath: /opt/schema-registry/etc/schema-registry/log4j.properties
+              subPath: "log4j.properties"
           env:
             - name: SCHEMA_REGISTRY_HOST_NAME
               valueFrom:
@@ -107,6 +111,9 @@ spec:
       terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       {{- if .Values.prometheus.jmx.enabled }}
       volumes:
+        - name: log-config
+          configMap:
+            name: {{ template "schema-registry.fullname" . }}-log-configmap
         - name: jmx-config
           configMap:
             name: {{ template "schema-registry.fullname" . }}-jmx-configmap

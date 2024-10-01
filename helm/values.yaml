@@ -170,4 +170,12 @@ compatibilityChanger:
     activeDeadlineSeconds: 2700
     startingDeadlineSeconds: 300
 
-
+logging:
+  level: WARN
+  extraLogConfig:
+    kafka:
+      name: org.apache.kafka
+      level: ERROR
+    zookeeper:
+      name: org.apache.zookeeper
+      level: ERROR
