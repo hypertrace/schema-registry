@@ -1,0 +1,2 @@
+pyhocon==0.3.61
+requests==2.32.3

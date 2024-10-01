@@ -146,19 +146,18 @@ servicemonitor:
   secure: false
   tlsConfig: {}
 
-compatibilityChanger:
+schemaCompatibility:
   enabled: true
   image:
-    repository: hypertrace/compatibility-changer
+    repository: hypertrace/schema-compatibility
     tagOverride: ""
   config:
-    name: "compatibility-changer-configmap"
-    defaultCompatibilityType: "NONE"
+    name: "schema-compatibility-configmap"
     schemaRegistryUrl: "http://schema-registry-svc:8081"
     compatibility:
       PROTOBUF:
         default: "NONE"
-        overrides: 
+        overrides:
           "subject-1": "level"
       AVRO:
         overrides:

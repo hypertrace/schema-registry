@@ -16,12 +16,6 @@ COMPATIBILITY_MAP = {
     }
 }
 
-# Query Strings
-SUBJECTS_URL = f"{SCHEMA_REGISTRY_URL}/subjects"
-VERSIONS_URL_TEMPLATE = lambda subject: f"{SCHEMA_REGISTRY_URL}/subjects/{subject}/versions"
-VERSION_DETAILS_URL_TEMPLATE = lambda subject, version: f"{SCHEMA_REGISTRY_URL}/subjects/{subject}/versions/{version}"
-COMPATIBILITY_LEVEL_URL_TEMPLATE = lambda subject: f"{SCHEMA_REGISTRY_URL}/config/{subject}"
-
 # Logging Configuration
 LOGGING_LEVEL = "INFO"
 LOG_FORMAT = '%(asctime)s - %(levelname)s - %(message)s'

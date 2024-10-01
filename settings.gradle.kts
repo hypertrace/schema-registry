@@ -11,4 +11,4 @@ plugins {
 }
 
 include(":docker")
-include(":compatibility-changer")
+include(":schema-compatibility")

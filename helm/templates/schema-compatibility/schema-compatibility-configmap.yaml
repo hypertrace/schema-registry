@@ -1,0 +1,30 @@
+{{- if .Values.schemaCompatibility.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.schemaCompatibility.config.name }}
+  labels:
+    release: {{ .Release.Name }}
+data:
+  application.conf: |
+    {
+      "schemaRegistryUrl": "{{ .Values.schemaCompatibility.config.schemaRegistryUrl }}",
+      "compatibility": {
+        "PROTOBUF": {
+          "default": "{{ .Values.schemaCompatibility.config.compatibility.PROTOBUF.default }}",
+          "overrides": {
+            {{- range $key, $value := .Values.schemaCompatibility.config.compatibility.PROTOBUF.overrides }}
+            "{{ $key }}": "{{ $value }}",
+            {{- end }}
+          }
+        },
+        "AVRO": {
+          "overrides": {
+            {{- range $key, $value := .Values.schemaCompatibility.config.compatibility.AVRO.overrides }}
+            "{{ $key }}": "{{ $value }}",
+            {{- end }}
+          }
+        }
+      }
+    }
+{{- end }}

@@ -25,4 +25,4 @@ test-output
 .java-version
 .idea
 *__pycache__*
-*cc*
+*venv*

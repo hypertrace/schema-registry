@@ -6,6 +6,6 @@ plugins {
 
 hypertraceDocker {
   defaultImage {
-    imageName.set("compatibility-changer")
+    imageName.set("schema-compatibility")
   }
 }
