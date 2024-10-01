@@ -10,7 +10,5 @@ plugins {
   id("org.hypertrace.version-settings") version "0.2.0"
 }
 
-enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
-
 include(":schema-compatibility")
 include(":docker")
