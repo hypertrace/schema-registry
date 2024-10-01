@@ -153,7 +153,17 @@ compatibilityChanger:
     tagOverride: ""
   config:
     name: "compatibility-changer-configmap"
-    defaultSchemaType: "NONE"
+    defaultCompatibilityType: "NONE"
+    schemaRegistryUrl: "http://schema-registry-svc:8081"
+    compatibility:
+      PROTOBUF:
+        default: "NONE"
+        overrides: 
+          "subject-1": "level"
+      AVRO:
+        overrides:
+          "subject-2": "level"
+
   cronjob:
     podLabels: {}
     podAnnotations: {}

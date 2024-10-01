@@ -8,6 +8,23 @@ metadata:
 data:
   application.conf: |
     {
-      "defaultSchemaType": {{ .Values.compatibilityChanger.config.defaultSchemaType }}
+      "schemaRegistryUrl": "{{ .Values.compatibilityChanger.config.schemaRegistryUrl }}",
+      "compatibility": {
+        "PROTOBUF": {
+          "default": "{{ .Values.compatibilityChanger.config.compatibility.PROTOBUF.default }}",
+          "overrides": {
+            {{- range $key, $value := .Values.compatibilityChanger.config.compatibility.PROTOBUF.overrides }}
+            "{{ $key }}": "{{ $value }}",
+            {{- end }}
+          }
+        },
+        "AVRO": {
+          "overrides": {
+            {{- range $key, $value := .Values.compatibilityChanger.config.compatibility.AVRO.overrides }}
+            "{{ $key }}": "{{ $value }}",
+            {{- end }}
+          }
+        }
+      }
     }
-  {{- end }}
+{{- end }}

@@ -3,13 +3,10 @@ FROM python:3.12.4-slim
 # update packages
 RUN apt update && apt upgrade -y
 
-RUN apt install -y curl && \
-    apt install -y wget
-
 # setup virtual environment
 RUN python -m venv /opt/venv
 
-# create directory and copy pinot-data-metrics directory
+# create directory and copy compatibility- directory
 RUN mkdir -p /opt/compatibility-changer
 
 COPY compatibility-changer /opt/compatibility-changer
