@@ -7,7 +7,7 @@ metadata:
 spec:
   replicas: {{ .Values.replicaCount }}
   revisionHistoryLimit: 2
-  serviceName: {{ template "schema-registry.headless.service" . }}
+  serviceName: {{ include "schema-registry.headless.service" . }}
   selector:
     matchLabels:
       app: {{ include "schema-registry.name" . }}
@@ -49,10 +49,16 @@ spec:
               mountPath: /opt/schema-registry/etc/schema-registry/log4j.properties
               subPath: "log4j.properties"
           env:
-            - name: SCHEMA_REGISTRY_HOST_NAME
+            - name: POD_NAME
               valueFrom:
                 fieldRef:
-                  fieldPath: status.podIP
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: SCHEMA_REGISTRY_HOST_NAME
+              value: $(POD_NAME).{{ include "schema-registry.headless.service" . }}.$(POD_NAMESPACE).svc.cluster.local
             - name: SCHEMA_REGISTRY_LISTENERS
               value: http://0.0.0.0:{{ .Values.service.port }}
             - name: SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS
