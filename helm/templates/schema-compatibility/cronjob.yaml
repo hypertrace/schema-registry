@@ -51,6 +51,10 @@ spec:
           imagePullSecrets:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+          {{- with .Values.containerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 14 }}
+          {{- end }}
           restartPolicy: {{ .Values.schemaCompatibility.cronjob.restartPolicy }}
           affinity:
             {{- toYaml .Values.schemaCompatibility.cronjob.affinity | nindent 12 }}
