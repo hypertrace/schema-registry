@@ -7,5 +7,6 @@ plugins {
 hypertraceDocker {
   defaultImage {
     imageName.set("schema-compatibility")
+    dockerFile.set(file("Dockerfile"))
   }
 }
