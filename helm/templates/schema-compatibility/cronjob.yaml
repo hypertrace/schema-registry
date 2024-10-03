@@ -20,7 +20,7 @@ spec:
           annotations:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.schemaCompatibility.cronjob.podLabels }}
+          {{- with merge .Values.schemaCompatibility.cronjob.podLabels .Values.commonPodLabels }}
           labels:
             {{- toYaml . | nindent 12 }}
           {{- end }}
