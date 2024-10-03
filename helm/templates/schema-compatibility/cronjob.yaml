@@ -16,7 +16,7 @@ spec:
       activeDeadlineSeconds: {{ .Values.schemaCompatibility.cronjob.activeDeadlineSeconds }}
       template:
         metadata:
-          {{- with .Values.schemaCompatibility.cronjob.podAnnotations }}
+          {{- with merge .Values.schemaCompatibility.cronjob.podAnnotations .Values.commonPodAnnotations }}
           annotations:
             {{- toYaml . | nindent 12 }}
           {{- end }}
