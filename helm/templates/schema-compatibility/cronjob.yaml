@@ -57,7 +57,7 @@ spec:
           nodeSelector:
             {{- toYaml .Values.schemaCompatibility.cronjob.nodeSelector | nindent 12 }}
           securityContext:
-            {{- toYaml .Values.schemaCompatibility.cronjob.securityContext | nindent 12 }}
+            {{- toYaml .Values.podSecurityContext | nindent 12 }}
           tolerations:
             {{- toYaml .Values.schemaCompatibility.cronjob.tolerations | nindent 12 }}
   {{- end }}
