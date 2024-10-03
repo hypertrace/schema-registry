@@ -174,7 +174,6 @@ schemaCompatibility:
     restartPolicy: Never
     affinity: {}
     nodeSelector: {}
-    securityContext: {}
     tolerations: []
     activeDeadlineSeconds: 2700
     startingDeadlineSeconds: 300
