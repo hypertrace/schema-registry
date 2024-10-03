@@ -10,4 +10,5 @@ plugins {
   id("org.hypertrace.version-settings") version "0.2.0"
 }
 
+include(":schema-compatibility")
 include(":docker")
