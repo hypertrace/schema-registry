@@ -41,7 +41,7 @@ spec:
               name: {{ .Values.schemaCompatibility.name }}
               {{- with .Values.schemaCompatibility.cronjob.resources }}
               resources:
-                {{- toYaml . | nindent 14 }}
+                {{- toYaml . | nindent 16 }}
               {{- end }}
               volumeMounts:
                 - name: service-config
@@ -49,7 +49,7 @@ spec:
                   subPath: application.conf
               {{- with .Values.containerSecurityContext }}
               securityContext:
-                {{- toYaml . | nindent 14 }}
+                {{- toYaml . | nindent 16 }}
               {{- end }}
           {{- with .Values.imagePullSecrets }}
           imagePullSecrets:
