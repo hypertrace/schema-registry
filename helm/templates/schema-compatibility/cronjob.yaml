@@ -28,7 +28,7 @@ spec:
           volumes:
             - name: service-config
               configMap:
-                name: {{ .Values.schemaCompatibility.config.name }}
+                name: {{ .Values.schemaCompatibility.name }}
           containers:
             - command: [ "/bin/sh", "-c" ]
               args:
@@ -38,7 +38,7 @@ spec:
                   /opt/venv/bin/python -m cron-job.py
               image: "{{ .Values.schemaCompatibility.image.repository }}:{{ default $.Chart.AppVersion .Values.schemaCompatibility.image.tagOverride }}"
               imagePullPolicy: {{ .Values.image.pullPolicy }}
-              name: {{ .Values.schemaCompatibility.config.name }}
+              name: {{ .Values.schemaCompatibility.name }}
               {{- with .Values.schemaCompatibility.cronjob.resources }}
               resources:
                 {{- toYaml . | nindent 14 }}

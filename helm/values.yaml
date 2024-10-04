@@ -147,8 +147,8 @@ servicemonitor:
   tlsConfig: {}
 
 schemaCompatibility:
-  enabled: true
   name: "schema-compatibility"
+  enabled: true
   image:
     repository: hypertrace/schema-compatibility
     tagOverride: ""
