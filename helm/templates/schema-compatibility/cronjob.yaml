@@ -47,13 +47,13 @@ spec:
                 - name: service-config
                   mountPath: /app/resources/configs/schema-compatibility/application.conf
                   subPath: application.conf
+              {{- with .Values.containerSecurityContext }}
+              securityContext:
+                {{- toYaml . | nindent 14 }}
+              {{- end }}
           {{- with .Values.imagePullSecrets }}
           imagePullSecrets:
             {{- toYaml . | nindent 12 }}
-          {{- end }}
-          {{- with .Values.containerSecurityContext }}
-          securityContext:
-            {{- toYaml . | nindent 14 }}
           {{- end }}
           restartPolicy: {{ .Values.schemaCompatibility.cronjob.restartPolicy }}
           affinity:
