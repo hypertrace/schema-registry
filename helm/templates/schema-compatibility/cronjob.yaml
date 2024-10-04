@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ .Values.schemaCompatibility.config.name }}
+  name: {{ .Values.schemaCompatibility.name }}
   labels:
     release: {{ .Release.Name }}
 spec:
@@ -28,7 +28,7 @@ spec:
           volumes:
             - name: service-config
               configMap:
-                name: {{ .Values.schemaCompatibility.config.name }}
+                name: {{ .Values.schemaCompatibility.name }}
           containers:
             - command: [ "/bin/sh", "-c" ]
               args:
@@ -36,32 +36,34 @@ spec:
                   echo "Running python script: compatibility changer"
                   cd /opt/schema-compatibility
                   /opt/venv/bin/python -m cron-job.py
-              image: "{{ .Values.image.registry }}/{{ .Values.schemaCompatibility.image.repository }}:{{ default $.Chart.AppVersion .Values.schemaCompatibility.image.tagOverride }}"
+              image: "{{ .Values.schemaCompatibility.image.repository }}:{{ default $.Chart.AppVersion .Values.schemaCompatibility.image.tagOverride }}"
               imagePullPolicy: {{ .Values.image.pullPolicy }}
-              name: {{ .Values.schemaCompatibility.config.name }}
+              name: {{ .Values.schemaCompatibility.name }}
               {{- with .Values.schemaCompatibility.cronjob.resources }}
               resources:
-                {{- toYaml . | nindent 14 }}
+                {{- toYaml . | nindent 16 }}
               {{- end }}
               volumeMounts:
                 - name: service-config
                   mountPath: /app/resources/configs/schema-compatibility/application.conf
                   subPath: application.conf
+              {{- with .Values.containerSecurityContext }}
+              securityContext:
+                {{- toYaml . | nindent 16 }}
+              {{- end }}
           {{- with .Values.imagePullSecrets }}
           imagePullSecrets:
             {{- toYaml . | nindent 12 }}
-          {{- end }}
-          {{- with .Values.containerSecurityContext }}
-          securityContext:
-            {{- toYaml . | nindent 14 }}
           {{- end }}
           restartPolicy: {{ .Values.schemaCompatibility.cronjob.restartPolicy }}
           affinity:
             {{- toYaml .Values.schemaCompatibility.cronjob.affinity | nindent 12 }}
           nodeSelector:
             {{- toYaml .Values.schemaCompatibility.cronjob.nodeSelector | nindent 12 }}
+          {{- with .Values.podSecurityContext}}
           securityContext:
-            {{- toYaml .Values.podSecurityContext | nindent 12 }}
+            {{- toYaml . | nindent 12}}
+          {{- end }}
           tolerations:
             {{- toYaml .Values.schemaCompatibility.cronjob.tolerations | nindent 12 }}
   {{- end }}

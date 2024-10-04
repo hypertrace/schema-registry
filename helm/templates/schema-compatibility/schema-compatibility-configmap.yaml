@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Values.schemaCompatibility.config.name }}
+  name: {{ .Values.schemaCompatibility.name }}
   labels:
     release: {{ .Release.Name }}
 data:
