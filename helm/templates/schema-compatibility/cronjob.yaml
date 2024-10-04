@@ -35,7 +35,7 @@ spec:
                 - |
                   echo "Running python script: compatibility changer"
                   cd /opt/schema-compatibility
-                  /opt/venv/bin/python -m cron-job.py
+                  /opt/venv/bin/python cron-job.py
               image: "{{ .Values.schemaCompatibility.image.repository }}:{{ default $.Chart.AppVersion .Values.schemaCompatibility.image.tagOverride }}"
               imagePullPolicy: {{ .Values.image.pullPolicy }}
               name: {{ .Values.schemaCompatibility.name }}
