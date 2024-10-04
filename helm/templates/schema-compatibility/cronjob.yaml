@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ .Values.schemaCompatibility.config.name }}
+  name: {{ .Values.schemaCompatibility.name }}
   labels:
     release: {{ .Release.Name }}
 spec:

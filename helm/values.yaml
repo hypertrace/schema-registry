@@ -148,11 +148,11 @@ servicemonitor:
 
 schemaCompatibility:
   enabled: true
+  name: "schema-compatibility"
   image:
     repository: hypertrace/schema-compatibility
     tagOverride: ""
   config:
-    name: "schema-compatibility"
     schemaRegistryUrl: "http://schema-registry-svc:8081"
     compatibility:
       PROTOBUF:
