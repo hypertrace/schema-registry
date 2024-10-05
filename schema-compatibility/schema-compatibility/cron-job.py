@@ -97,12 +97,13 @@ def main():
         first_version = versions[0]
         schema = get_schema(subject, first_version)
 
-        schema_type = schema.get('schemaType', 'AVRO')  # Default to AVRO if schemaType does not exist
+        # Default to AVRO if schemaType does not exist
+        schema_type = schema.get('schemaType', 'AVRO')
 
-        compatibility_level = compatibility_map.get(schema_type, {}).get('overrides', {}).get(subject)
+        compatibility_level = compatibility_map.get(schema_type, {}).get('overrides', {}).get(subject, None)
 
         if not compatibility_level:
-            compatibility_level = compatibility_map.get(schema_type, {}).get('default')
+            compatibility_level = compatibility_map.get(schema_type, {}).get('default', None)
 
         if not compatibility_level:
             continue
