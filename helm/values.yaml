@@ -157,11 +157,15 @@ schemaCompatibility:
     compatibility:
       PROTOBUF:
         default: "NONE"
-        overrides:
-          "subject-1": "level"
+        overrides: {}
+# Added for reference only
+#        overrides:
+#          "subject-1": "level"
       AVRO:
-        overrides:
-          "subject-2": "level"
+        overrides: {}
+# Added for reference only
+#        overrides:
+#          "subject-2": "level"
 
   cronjob:
     podLabels: {}
