@@ -153,7 +153,7 @@ schemaCompatibility:
     repository: hypertrace/schema-compatibility
     tagOverride: ""
   config:
-    schemaRegistryUrl: "http://schema-registry-svc:8081"
+    schemaRegistryUrl: "http://schema-registry-service:8081"
     compatibility:
       PROTOBUF:
         default: "NONE"
