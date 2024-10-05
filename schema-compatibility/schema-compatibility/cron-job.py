@@ -88,10 +88,10 @@ def main():
     logging.info(f"Total number of subjects: {len(subjects)}")
 
     for subject in subjects:
-        logging.info(f"\nSubject: {subject}")
+        logging.info(f"Subject: {subject}")
         versions = get_subject_versions(subject)
         if not versions:
-            logging.warning(f"No version found for subject: {subject}")
+            logging.warning(f"Skipping update. No schema version found for subject: {subject}")
             continue
 
         first_version = versions[0]
@@ -104,8 +104,10 @@ def main():
 
         if not compatibility_level:
             compatibility_level = compatibility_map.get(schema_type, {}).get('default', None)
+            logging.info(f"No user config found for subject: {subject}. Falling back to default compatibility level for schema type: {schema_type}")
 
         if not compatibility_level:
+            logging.info(f"Skipping update. No configs found for subject: {subject}")
             continue
 
         current_level = get_compatibility_level(subject)
