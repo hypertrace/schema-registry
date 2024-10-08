@@ -1,7 +1,7 @@
 FROM python:3.12.4-slim
 
 # update packages
-RUN apt update && apt upgrade -y
+RUN apt update && apt upgrade -y && apt install -y curl && rm -rf /var/lib/apt/lists/*
 
 # setup virtual environment
 RUN python -m venv /opt/venv
