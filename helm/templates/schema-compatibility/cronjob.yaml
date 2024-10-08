@@ -33,9 +33,17 @@ spec:
             - command: [ "/bin/sh", "-c" ]
               args:
                 - |
+                  finish() {
+                    code=$?
+                    curl -s -XPOST http://127.0.0.1:15020/quitquitquit || true
+                    exit $code
+                  }
+                  trap finish EXIT
+
                   echo "Running python script: compatibility changer"
+                  source /opt/venv/bin/activate
                   cd /opt/schema-compatibility
-                  /opt/venv/bin/python cron-job.py
+                  python cron-job.py
               image: "{{ .Values.schemaCompatibility.image.repository }}:{{ default $.Chart.AppVersion .Values.schemaCompatibility.image.tagOverride }}"
               imagePullPolicy: {{ .Values.image.pullPolicy }}
               name: {{ .Values.schemaCompatibility.name }}
