@@ -1,4 +1,8 @@
 # com.google.protobuf:protobuf-java
 CVE-2024-7254 exp:2024-10-31
+
 # commons-io:commons-io
 CVE-2024-47554 exp:2024-10-31
+
+# org.apache.avro:avro
+CVE-2024-47561 exp:2024-10-31
