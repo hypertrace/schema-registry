@@ -30,7 +30,7 @@ spec:
               configMap:
                 name: {{ .Values.schemaCompatibility.name }}
           containers:
-            - command: [ "/bin/sh", "-c" ]
+            - command: [ "/bin/bash", "-ce" ]
               args:
                 - |
                   finish() {
