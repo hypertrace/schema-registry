@@ -162,7 +162,8 @@ schemaCompatibility:
 #        overrides:
 #          "subject-1": "level"
       AVRO:
-        overrides: {}
+        overrides:
+          "computed-metrics-value": "BACKWARD"
 # Added for reference only
 #        overrides:
 #          "subject-2": "level"
